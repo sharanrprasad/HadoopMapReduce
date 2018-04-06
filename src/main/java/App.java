@@ -16,23 +16,11 @@ public class App {
 
     public static void main(String[] args) {
 
+        try{
+            string urlregex = ""
 
-        java.nio.file.Path outputDirectory = Paths.get("/Users/sharanrprasad/Documents/java8");
-        try {
-            if (!Files.exists(outputDirectory)) {
-                outputDirectory = Files.createDirectory(outputDirectory);
-            }
-            if(Files.isDirectory(outputDirectory)) {
-                java.nio.file.Path filePath = Paths.get(outputDirectory.toUri().getPath() + "/result.txt");
-                filePath = Files.createFile(filePath);
-                try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-                    writer.write("Total Clicks "  + " \n \n");
-                    writer.write("Total Searches  " + " \n \n");
-                    writer.write("Unique Users   "  + " \n \n");
-                }
-            }
 
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
     }

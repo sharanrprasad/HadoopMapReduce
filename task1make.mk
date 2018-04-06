@@ -1,3 +1,4 @@
+OVERRIDING=default
 SEARCHID = 7980225
 CC = javac
 HD = hadoop
