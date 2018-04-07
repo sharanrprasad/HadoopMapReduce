@@ -17,8 +17,6 @@ public class App {
     public static void main(String[] args) {
 
         try{
-            string urlregex = ""
-
 
         }catch (Exception e){
             e.printStackTrace();

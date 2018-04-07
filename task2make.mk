@@ -1,6 +1,6 @@
 CC = javac
 HD = hadoop
-OUTPUT = /user/sharanprasad/output25
+OUTPUT = /user/sharanprasad/output26
 DIR = mkdir
 
 all: create_directory compile create_jar run_hadoop display_output
