@@ -24,8 +24,7 @@ run_hadoop :
 display_output :
         hdfs dfs -cat $(OUTPUT)/part-r-00000
 
-clean :
-        hadoopclean directory_clean
+clean : hadoopclean directory_clean
 
 hadoopclean :
         hdfs dfs -rm -r -f $(OUTPUT)

@@ -3,6 +3,7 @@ package nz.ac.vuw.ecs.sharanprasad;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.*;
@@ -23,7 +24,6 @@ public class SearchHistory {
 
         private String searchID;
         private Configuration conf;
-        private static  String dateTimeRegex = "[0-9]{4}-[0-9]{2}-[0-9][0-9](\\s)?[0-9][0-9]?:[0-5][0-9]:[0-5][0-9]";
 
         @Override
         public void setup(Context context) throws IOException,
@@ -35,8 +35,12 @@ public class SearchHistory {
         @Override
         public void map(Text key,Text value,Context context) throws IOException , InterruptedException{
             if(searchID.equalsIgnoreCase(key.toString())){
-               String valueList = value.toString().replaceFirst(dateTimeRegex,"");
-                context.write(new Text(searchID),new Text(valueList));
+
+                String[] valueList = value.toString().split("\\t");
+                Optional<String> val = IntStream.range(0,valueList.length).filter( i -> i != 1).mapToObj(i -> valueList[i]).reduce((init,curr) -> init + "\t"  + curr ); //remove the time column
+                 if(val.isPresent()) {
+                    context.write(new Text(searchID), new Text(val.get()));
+                }
             }
         }
     }
@@ -82,4 +86,3 @@ public class SearchHistory {
 
 }
 
-// conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", ",");

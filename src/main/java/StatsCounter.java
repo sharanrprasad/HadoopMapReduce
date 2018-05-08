@@ -13,6 +13,8 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.fs.*;
+
+import java.io.Console;
 import java.io.IOException;
 
 public class StatsCounter {
@@ -37,11 +39,16 @@ public class StatsCounter {
 
         @Override
         public void map(Text key,Text value,Context context) throws IOException , InterruptedException{
-            if(value.toString().matches(urlRegex)){
-                context.getCounter(CUSTOM_COUNTER.CLICKS_TOTAL).increment(1);
-            }else{
-                context.getCounter(CUSTOM_COUNTER.SEARCHES_TOTAL).increment(1);
+            if(key == null ||  key.toString().isEmpty()  || !key.toString().matches("[0-9]*") ) {
+                return;
             }
+
+            if(value.toString().split("\\t").length == 4 ) {
+                context.getCounter(CUSTOM_COUNTER.CLICKS_TOTAL).increment(1);
+
+            }
+            context.getCounter(CUSTOM_COUNTER.SEARCHES_TOTAL).increment(1);
+
             context.write(key,one);
         }
     }
@@ -82,8 +89,8 @@ public class StatsCounter {
         Configuration conf = new Configuration();
         GenericOptionsParser optionParser = new GenericOptionsParser(conf, args);
         String[] remainingArgs = optionParser.getRemainingArgs();
-        if (remainingArgs.length != 2) {
-            System.err.println("Not Enough arguments specify input and output ");
+        if (remainingArgs.length != 3) {
+            System.err.println("Not Enough arguments specify input, output and number of reducers ");
             System.exit(2);
         }
         Job job = Job.getInstance(conf, "stats counter");
@@ -97,6 +104,9 @@ public class StatsCounter {
 
         KeyValueTextInputFormat.addInputPath(job, new Path(remainingArgs[0]));
         FileOutputFormat.setOutputPath(job, new Path(remainingArgs[1]));
+        System.out.println("Number of reducers " + remainingArgs[2]);
+        job.setNumReduceTasks(Integer.parseInt(remainingArgs[2]));
+
 
         int r = job.waitForCompletion(true) ? 0 : 1;
 
@@ -112,7 +122,7 @@ public class StatsCounter {
         System.out.println("\n\n");
         System.out.println("total Searches = " + totalSearches);
         System.out.println("\n\n");
-        System.out.println("Unique Users" + uniqeUsers);
+        System.out.println("Unique Users = " + uniqeUsers);
         System.out.println("\n\n\n********** \n\n\n\n");
 
         Path pt = new Path(remainingArgs[1] + "/results.txt");
@@ -128,8 +138,10 @@ public class StatsCounter {
             writer.close();
         }catch (IOException e){
             e.printStackTrace();
+            throw new Error(e);
         }catch (Exception e){
             e.printStackTrace();
+            throw new Error(e);
         }
         System.exit(r);
     }

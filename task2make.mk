@@ -1,7 +1,9 @@
+NUMREDUCER = 1
 CC = javac
 HD = hadoop
 OUTPUT = /user/sharanprasad/output26
 DIR = mkdir
+
 
 all: create_directory compile create_jar run_hadoop display_output
 
@@ -17,12 +19,12 @@ create_jar :
 
 
 run_hadoop :
-        $(HD) jar sharan_task2.jar nz.ac.vuw.ecs.sharanprasad.StatsCounter /tmp/aol $(OUTPUT)
+        $(HD) jar sharan_task2.jar nz.ac.vuw.ecs.sharanprasad.StatsCounter /tmp/aol $(OUTPUT) $(NUMREDUCER)
 
 display_output :
         hdfs dfs -cat $(OUTPUT)/results.txt
 
-clean :  vihadoopclean directory_clean
+clean :  hadoopclean directory_clean
 
 hadoopclean :
         hdfs dfs -rm -r -f $(OUTPUT)
